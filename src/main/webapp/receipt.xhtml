@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Your Receipt</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+        <style type="text/css">
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f7f6;
+                color: #333;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+            }
+            .receipt-container {
+                background-color: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                padding: 30px;
+                margin: 30px auto;
+                max-width: 800px;
+                border: 1px solid #e0e0e0;
+            }
+            .receipt-header {
+                text-align: center;
+                font-size: 2.2em;
+                color: #2c3e50;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+            .order-details, .shipping-details, .item-details {
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 1px dashed #e0e0e0;
+            }
+            .order-details p, .shipping-details p, .item-details p {
+                margin: 5px 0;
+                font-size: 1.1em;
+            }
+            .order-details strong, .shipping-details strong {
+                color: #34495e;
+                display: inline-block;
+                width: 150px; 
+            }
+            .order-summary {
+                text-align: right;
+                margin-top: 20px;
+                font-size: 1.4em;
+                font-weight: bold;
+                color: #34495e;
+                border-top: 2px solid #e0e0e0;
+                padding-top: 15px;
+            }
+            .order-summary span {
+                color: #27ae60;
+                font-size: 1.6em;
+            }
+            .receipt-buttons {
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #e0e0e0;
+            }
+            .receipt-buttons .ui-button {
+                margin: 0 10px;
+            }
+            .ordered-items-table .ui-column-title {
+                font-weight: bold;
+                color: #34495e;
+                text-align: center;
+            }
+            .ordered-items-table .ui-datatable-data > tr > td {
+                vertical-align: middle;
+                padding: 10px;
+            }
+            .ordered-items-table .product-image-small {
+                width: 60px;
+                height: 60px;
+                object-fit: contain;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+            .ordered-items-table .product-info {
+                display: flex;
+                align-items: center;
+            }
+            .ordered-items-table .product-name {
+                font-weight: bold;
+                color: #34495e;
+            }
+            .ordered-items-table .product-type {
+                font-size: 0.8em;
+                color: #6c757d;
+            }
+            .ordered-items-table .item-price,
+            .ordered-items-table .item-subtotal {
+                font-weight: bold;
+                color: #27ae60;
+            }
+
+            
+            @media print {
+                body {
+                    background-color: #fff;
+                    margin: 0;
+                    padding: 0;
+                }
+                .receipt-container {
+                    box-shadow: none;
+                    border: none;
+                    margin: 0;
+                    padding: 0;
+                    max-width: 100%;
+                }
+                .receipt-buttons {
+                    display: none; 
+                }
+                .ui-messages {
+                    display: none; 
+                }
+            }
+        </style>
+    </h:head>
+    <body>
+        <h:form>
+            <div class="receipt-container">
+                <p:messages id="receiptMessages" showDetail="true" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+
+                <h1 class="receipt-header">Your Order Receipt</h1>
+
+                <h:panelGroup rendered="#{receiptBean.orderId != null}">
+                    <div class="order-details">
+                        <p><strong>Order ID:</strong> #{receiptBean.orderId}</p>
+                        <p><strong>Order Date:</strong> <h:outputText value="#{receiptBean.orderDate}">
+                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm"/>
+                            </h:outputText></p>
+                        <p><strong>Customer Email:</strong> #{receiptBean.customerEmail}</p>
+                    </div>
+
+                    <div class="shipping-details">
+                        <h3>Shipping Address:</h3>
+                        <p><strong>Name:</strong> #{receiptBean.firstName} #{receiptBean.lastName}</p>
+                        <p><strong>Address:</strong> #{receiptBean.shippingAddress}</p>
+                        <p><strong>City:</strong> #{receiptBean.shippingCity}</p>
+                        <p><strong>Postal Code:</strong> #{receiptBean.shippingPostalCode}</p>
+                        <p><strong>County/Region:</strong> #{receiptBean.shippingCountyRegion}</p>
+                    </div>
+
+                    <div class="item-details">
+                        <h3>Items Ordered:</h3>
+                        <p:dataTable id="orderedItemsTable" value="#{receiptBean.orderedItems}" var="item"
+                                     styleClass="ordered-items-table" emptyMessage="No items found for this order.">
+                            <p:column headerText="Product" width="40%">
+                                <div class="product-info">
+                                    <h:graphicImage value="#{item.productImagePath}" alt="#{item.productName}" class="product-image-small"/>
+                                    <div>
+                                        <div class="product-name">#{item.productName}</div>
+                                        <div class="product-type">(#{item.productType})</div>
+                                    </div>
+                                </div >
+                            </p:column>
+                            <p:column headerText="Price" width="20%" styleClass="text-center">
+                                <h:outputText value="#{item.priceAtTimeOfAddition}" class="item-price">
+                                    <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Quantity" width="20%" styleClass="text-center">
+                                <h:outputText value="#{item.quantity}"/>
+                            </p:column>
+                            <p:column headerText="Subtotal" width="20%" styleClass="text-right">
+                                <h:outputText value="#{item.totalItemPrice}" class="item-subtotal">
+                                    <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                    <div class="order-summary">
+                        Total Amount: <span><h:outputText value="#{receiptBean.getTotalAmount}">
+                                <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                            </h:outputText></span>
+                    </div>
+
+                    <div class="receipt-buttons">
+                        <p:commandButton value="Print Receipt" icon="pi pi-print" type="button" onclick="window.print()"
+                                         styleClass="ui-button-info ui-button-raised"/>
+                        <p:commandButton value="Continue Shopping" icon="pi pi-arrow-left"
+                                         action="/store.xhtml?faces-redirect=true"
+                                         styleClass="ui-button-secondary ui-button-raised"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{receiptBean.orderId == null}">
+                    <div class="empty-cart-message" style="text-align: center; padding: 50px; font-size: 1.3em; color: #6c757d;">
+                        <i class="pi pi-exclamation-triangle" style="font-size: 3em; margin-bottom: 15px; color: #adb5bd;"></i>
+                        <p>No order details found. Please place an order first.</p>
+                        <p:commandButton value="Go to Store" action="/store.xhtml?faces-redirect=true"
+                                         icon="pi pi-arrow-left" styleClass="ui-button-raised ui-button-secondary"/>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </body>
+</html>

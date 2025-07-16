@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="jakarta.faces.facelets">
+    <ui:composition template="/template.xhtml">
+        <ui:define name="content">
+
+        <h:head>
+            <title>Packages</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+            <style type="text/css">
+                body {
+                    font-family: 'Inter', sans-serif;
+                    background-color: #f0f2f5;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+
+                .product.card {
+                    width: 100%;
+                    max-width: 1200px;
+                    margin: auto;
+                    padding: 20px;
+                    border-radius: 12px;
+                    background-color: #ffffff;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                }
+                .chooser{
+                    justify-content: center;
+                }
+
+                .ui-dataview.ui-dataview-grid .ui-dataview-content {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 20px;
+                    padding: 10px;
+
+                    align-items: stretch;
+                }
+
+                
+                .ui-dataview-column {
+                    flex: 0 0 calc(33.333% - 20px); 
+                    max-width: calc(33.333% - 20px);
+                    box-sizing: border-box;
+                    margin-bottom: 20px; 
+                    display: flex; 
+                    justify-content: center; 
+                }
+
+                
+                @media (max-width: 1024px) {
+                    .ui-dataview-column {
+                        flex: 0 0 calc(50% - 20px); 
+                        max-width: calc(50% - 20px);
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .ui-dataview-column {
+                        flex: 0 0 calc(50% - 20px); 
+                        max-width: calc(50% - 20px);
+                    }
+                    .product.card {
+                        padding: 15px;
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    .ui-dataview-column {
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                        margin-left: 0;
+                        margin-right: 0;
+                    }
+                    .product-grid-item.card {
+                        width: 100%;
+                        max-width: none;
+                    }
+                }
+
+          
+                .product-grid-item.card {
+                    border: 1px solid #e0e0e0;
+                    border-radius: 12px;
+                    padding: 25px;
+                    text-align: center;
+                    background-color: #fff;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                    transition: transform 0.2s ease-in-out;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    height: 100%; 
+                    flex-grow: 1; 
+                }
+
+                .product-grid-item.card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                }
+
+                .product-grid-item-top {
+                    position: relative;
+                    margin-bottom: 20px;
+                }
+
+                .speed-circle {
+                    width: 120px;
+                    height: 120px;
+                    border: 5px solid #FF5733;
+                    border-radius: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto 15px auto;
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    color: #333;
+                   
+                    min-width: 120px;
+                    min-height: 120px;
+                }
+
+                .speed-circle .label {
+                    font-size: 0.8em;
+                    color: #555;
+                    margin-bottom: 5px;
+                }
+
+                .speed-circle .value {
+                    font-size: 1.8em;
+                    color: #FF5733;
+                    line-height: 1;
+                }
+
+                .product-name {
+                    font-size: 1.7em;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 10px;
+                }
+
+                .product-description {
+                    font-size: 0.9em;
+                    color: #666;
+                    margin-bottom: 15px;
+                    min-height: 50px;
+                }
+
+                .product-price {
+                    font-size: 2.2em;
+                    font-weight: bold;
+                    color: #1a73e8;
+                    display: block;
+                    margin-bottom: 5px;
+                }
+
+                .billing-cycle {
+                    font-size: 0.9em;
+                    color: #888;
+                    vertical-align: super;
+                    margin-left: 5px;
+                    position: relative;
+                    top: -10px;
+                }
+
+                .ui-button {
+                    width: 80%;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    font-size: 1.1em;
+                    font-weight: bold;
+                    cursor: pointer;
+                    border: none;
+                    background: linear-gradient(to right, #FF5733, #FF8C00);
+                    color: white;
+                    box-shadow: 0 4px 10px rgba(255, 87, 51, 0.4);
+                    transition: all 0.3s ease;
+                    margin-top: 20px;
+                }
+
+                .ui-button:hover {
+                    background: linear-gradient(to right, #FF8C00, #FF5733);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 15px rgba(255, 87, 51, 0.6);
+                }
+
+                .ui-button:disabled {
+                    background: #cccccc;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                }
+
+                .product-grid-item-top > div:not(.speed-circle),
+                .product-badge,
+                .pi-tag,
+                .product-category,
+                .p-rating,
+                .product-grid-item-content p:not(.product-description),
+                .product-grid-item-content img,
+                .product-list-item,
+                .ui-dataview-list,
+                .ui-dataview-header .ui-g.ui-g-nogutter {
+                    display: none !important;
+                }
+
+                .ui-megamenu {
+                    margin-bottom: 20px;
+                }
+            </style>
+        </h:head>
+
+        <body>
+
+            <div class="product card">
+                <div class="chooser">
+                    <p> Choose Your Preferred Package</p>
+                </div>
+                <h:form id="form">
+                    <p:dataView var="pkg" value="#{packageBean.packages}" rows="12" paginator="false"
+                                layout="grid" gridRowStyleClass="">
+
+                        <p:dataViewGridItem>
+                            <div class="product-grid-item card border-1">
+                                <div class="product-grid-item-top">
+                                    <div class="speed-circle">
+                                        <span class="label">Up to</span>
+                                        <span class="value">#{pkg.speedMbps}</span>
+                                        <span class="label">Mbps</span>
+                                    </div>
+                                </div>
+                                <div class="product-grid-item-content">
+                                    <div class="product-name">#{pkg.name}</div>
+                                    <div class="product-description">#{pkg.description}</div>
+                                </div>
+                                <div class="product-grid-item-bottom">
+                                    <h:outputText value="#{pkg.price}" styleClass="product-price">
+                                        <f:convertNumber currencySymbol="Ksh" type="currency"/>
+                                    </h:outputText>
+                                    <span class="billing-cycle">#{pkg.billingCycle}</span>
+
+                                    <p:commandButton value="Purchase Package" action="store.xhtml?faces-redirect=true" ajax="false" icon="pi pi-check-circle" />
+       
+                                </div>
+                            </div>
+                        </p:dataViewGridItem>
+                    </p:dataView>
+                </h:form>
+            </div>
+        </body>
+        </ui:define>
+    </ui:composition>
+</html>

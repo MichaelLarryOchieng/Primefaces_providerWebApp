@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Your Shopping Cart</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+        <style type="text/css">
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f7f6;
+                color: #333;
+                line-height: 1.6;
+            }
+
+            .cart-container {
+                background-color: rgba(255, 255, 255, 0.95);
+                border-radius: 10px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                padding: 30px;
+                margin: 30px auto;
+                max-width: 1000px;
+            }
+
+            h1 {
+                color: #2c3e50;
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+                border-bottom: 2px solid #e0e0e0;
+                padding-bottom: 15px;
+            }
+
+            .cart-messages {
+                margin-bottom: 20px;
+            }
+
+            .cart-table .ui-column-title {
+                font-weight: bold;
+                color: #34495e;
+                text-align: center; 
+            }
+
+            .cart-table .ui-datatable-data > tr > td {
+                vertical-align: middle; 
+                padding: 10px; 
+            }
+
+            .cart-table .product-image-small {
+                width: 80px;
+                height: 80px;
+                object-fit: contain;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+
+            .cart-table .product-info {
+                display: flex;
+                align-items: center;
+            }
+
+            .cart-table .product-name {
+                font-weight: bold;
+                color: #34495e;
+            }
+            .cart-table .product-type {
+                font-size: 0.8em;
+                color: #6c757d;
+            }
+
+            .cart-table .item-price,
+            .cart-table .item-subtotal {
+                font-weight: bold;
+                color: #27ae60;
+            }
+
+            .cart-actions-bottom {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #e0e0e0;
+                flex-wrap: wrap; 
+                gap: 15px; 
+            }
+
+            .cart-summary {
+                text-align: right;
+                margin-top: 20px;
+                font-size: 1.2em;
+                font-weight: bold;
+                color: #34495e;
+            }
+
+            .cart-summary span {
+                color: #27ae60;
+                font-size: 1.4em;
+            }
+
+            .empty-cart-message {
+                text-align: center;
+                padding: 50px;
+                font-size: 1.3em;
+                color: #6c757d;
+            }
+            .empty-cart-message .pi {
+                font-size: 3em;
+                margin-bottom: 15px;
+                color: #adb5bd;
+            }
+        </style>
+    </h:head>
+    <body>
+        <h:form id="cartForm">
+            <div class="cart-container">
+                <h1>Shopping Cart</h1>
+
+                <p:messages id="cartMessages" showDetail="true" closable="true" class="cart-messages">
+                    <p:autoUpdate/>
+                </p:messages>
+
+                <h:panelGroup rendered="#{empty shoppingCartBean.cartItems}">
+                    <div class="empty-cart-message">
+                        <i class="pi pi-shopping-cart"></i>
+                        <p>Your shopping cart is currently empty.</p>
+                        <p:commandButton value="Start Shopping" action="/store.xhtml?faces-redirect=true"
+                                         icon="pi pi-arrow-left" styleClass="ui-button-raised ui-button-secondary back-button"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not empty shoppingCartBean.cartItems}">
+                    <p:dataTable id="cartItemsTable" value="#{shoppingCartBean.cartItems}" var="item"
+                                 styleClass="cart-table"
+                                 emptyMessage="Your cart is empty."
+                                 rowKey="#{item.id}-#{item.type}" resizableColumns="true"
+                                 liveResize="true"
+                                 showGridlines="true">
+
+                        <p:column headerText="Product" width="35%">
+                            <div class="product-info">
+                                <h:graphicImage value="#{item.imagePath}" alt="#{item.name}"
+                                                class="product-image-small" />
+                                <div>
+                                    <div class="product-name">#{item.name}</div>
+                                    <div class="product-type">(#{item.type})</div>
+                                </div>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="Price" width="15%" styleClass="text-center">
+                            <h:outputText value="#{item.price}" class="item-price">
+                                <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Quantity" width="20%" styleClass="text-center">
+                            <p:spinner value="#{item.quantity}" min="1" style="width: 80px;">
+                                <p:ajax event="valueChange"
+                                        listener="#{shoppingCartBean.updateItemQuantity(item.cartItemId, item.type, item.id, item.quantity)}"
+                                        update="@form:cartMessages @form:cartItemsTable @form:cartSummaryPanel"/>
+                            </p:spinner>
+                        </p:column>
+
+                        <p:column headerText="Subtotal" width="15%" styleClass="text-right">
+                            <h:outputText value="#{item.totalItemPrice}" class="item-subtotal">
+                                <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Actions" width="15%" styleClass="text-center">
+                            <p:commandButton icon="pi pi-times" title="Remove"
+                                             action="#{shoppingCartBean.removeItem(item.id, item.type)}"
+                                             update="@form:cartMessages @form:cartItemsTable @form:cartSummaryPanel"
+                                             styleClass="ui-button-danger ui-button-flat rounded-button"
+                                             process="@this" />
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:outputPanel id="cartSummaryPanel">
+                                <div class="cart-summary">
+                                    Total Items: <h:outputText value="#{shoppingCartBean.totalItemsInCart}" /><br/>
+                                    Cart Total: <h:outputText value="#{shoppingCartBean.cartTotalPrice}">
+                                        <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                                    </h:outputText>
+                                </div>
+                            </p:outputPanel>
+                        </f:facet>
+                    </p:dataTable>
+
+                    <div class="cart-actions-bottom">
+                        <p:commandButton value="Clear Cart" icon="pi pi-trash"
+                                         action="#{shoppingCartBean.clearCart()}"
+                                         update="@form:cartMessages @form:cartItemsTable @form:cartSummaryPanel"
+                                         styleClass="ui-button-warning ui-button-raised"/>
+
+                        <p:commandButton value="Continue Shopping" icon="pi pi-arrow-left"
+                                         action="/store.xhtml?faces-redirect=true"
+                                         styleClass="ui-button-secondary ui-button-raised"/>
+
+                        <p:commandButton value="Proceed to Checkout" icon="pi pi-check"
+                                         action="/checkout.xhtml?faces-redirect=true"
+                                         styleClass="ui-button-success ui-button-raised"/>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </body>
+</html>

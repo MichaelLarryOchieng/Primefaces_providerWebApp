@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 15px;
+        }
+        .login-logo {
+            max-width: 120px;
+            height: auto;
+            border-radius: 4px;
+        }
+        .login-card h3 {
+            color: #555;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: normal;
+        }
+        .form-group .ui-inputtext,
+        .form-group .ui-password,
+        .ui-dialog .ui-panelgrid .ui-inputtext,
+        .ui-dialog .ui-panelgrid .ui-password,
+        .ui-dialog .ui-panelgrid .ui-calendar,
+        .ui-dialog .ui-panelgrid .ui-selectoneradio {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95em;
+        }
+
+        .ui-button {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 1em;
+            font-weight: normal;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .signup-link {
+            display: block;
+            margin-top: 15px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        .ui-dialog {
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        .ui-dialog .ui-dialog-titlebar {
+            background-color: #f8f8f8;
+            color: #333;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+        .ui-dialog .ui-dialog-content {
+            padding: 20px;
+        }
+        .ui-dialog .ui-panelgrid label {
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .ui-messages {
+            margin-top: 10px;
+            text-align: left;
+        }
+        .ui-messages-info, .ui-messages-error {
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        .ui-messages-info {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .ui-messages-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 600px) {
+            .login-card {
+                padding: 15px;
+                margin: 0 10px;
+            }
+            .login-card h3 {
+                font-size: 1.4em;
+            }
+            .ui-button {
+                padding: 8px 0;
+                font-size: 0.95em;
+            }
+            .signup-link {
+                font-size: 0.85em;
+            }
+            .ui-dialog .ui-dialog-titlebar {
+                padding: 10px 12px;
+                font-size: 1em;
+            }
+            .ui-dialog .ui-dialog-content {
+                padding: 15px;
+            }
+        }
+        .signup-scroll-panel {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+    </style>
+    <title>Login</title>
+</h:head>
+<h:body>
+    <div class="login-container">
+        <p:card class="login-card">
+            <f:facet name="title">
+                <div class="logo-container">
+                    <h:graphicImage value="/images/Logo1.png" alt="Logo" styleClass="login-logo"/>
+                </div>
+                <h3>Login</h3>
+            </f:facet>
+            <h:form id="loginForm">
+                <p:messages id="loginMessages" showDetail="true" showSummary="false" closable="true"/>
+                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <p:inputText id="username" value="#{loginBean.username}" placeholder="Username" required="true" requiredMessage="Username is required."/>
+                    <p:password id="password" value="#{loginBean.password}" placeholder="Password" required="true" requiredMessage="Password is required."/>
+                </p:panelGrid>
+                <p:commandButton value="Login" action="#{loginBean.doLogin}" update="@form loginMessages"/>
+                <p:commandLink value="Don't have an account? Sign Up" styleClass="signup-link" actionListener="#{LoginBean.openSignupDialog}" update="signupDialog" oncomplete="PF('signupDialogWidget').show()"/>
+            </h:form>
+        </p:card>
+
+        <p:dialog id="signupDialog" header="Sign Up" widgetVar="signupDialogWidget" modal="true" resizable="false" visible="#{LoginBean.signupDialogVisible}" responsive="true">
+            <h:form id="signupForm">
+                <p:messages id="signupMessages" showDetail="true" showSummary="false" closable="true"/>
+                <p:scrollPanel styleClass="signup-scroll-panel">
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                        <p:outputLabel for="signupName" value="Full Name:"/>
+                        <p:inputText id="signupName" value="#{loginBean.newUser.name}" required="true" requiredMessage="Name is required."/>
+
+                        <p:outputLabel for="signupUsername" value="Username:"/>
+                        <p:inputText id="signupUsername" value="#{loginBean.newUser.username}" required="true" requiredMessage="Username is required."/>
+
+                        <p:outputLabel for="signupPassword" value="Password:"/>
+                        <p:password id="signupPassword" value="#{loginBean.newUser.password}" required="true" requiredMessage="Password is required."/>
+
+                        <p:outputLabel for="signupDepartment" value="Department:"/>
+                        <p:inputText id="signupDepartment" value="#{loginBean.newUser.department}"/>
+
+                        <p:outputLabel for="signupBirth" value="Date of Birth:"/>
+                        <p:calendar id="signupBirth" value="#{loginBean.newUser.birth}" pattern="yyyy-MM-dd" showOn="button" navigator="true" yearRange="c-100:c+0"/>
+
+                        <p:outputLabel for="signupGender" value="Gender:"/>
+                        <p:selectOneRadio id="signupGender" value="#{loginBean.newUser.gender}" layout="lineDirection">
+                            <f:selectItem itemLabel="Male" itemValue="m"/>
+                            <f:selectItem itemLabel="Female" itemValue="f"/>
+                        </p:selectOneRadio>
+
+                        <p:outputLabel for="signupCity" value="City:"/>
+                        <p:inputText id="signupCity" value="#{loginBean.newUser.city}"/>
+
+                        <p:outputLabel for="signupRegionId" value="Region ID:"/>
+                        <p:inputText id="signupRegionId" value="#{loginBean.newUser.region_id}"/>
+                    </p:panelGrid>
+                </p:scrollPanel>
+
+                <p:commandButton value="Register" action="#{loginBean.doSignup}" update="signupForm signupDialog loginForm:loginMessages" oncomplete="if (!args.validationFailed &amp;&amp; args.signupSuccess) PF('signupDialogWidget').hide()"/>
+                <p:commandButton value="Cancel" type="button" onclick="PF('signupDialogWidget').hide()" style="margin-top: 10px;"/>
+            </h:form>
+        </p:dialog>
+    </div>
+</h:body>
+</html>
+
+
+

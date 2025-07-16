@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+    <h:head>
+        <title>User Profile</title>
+        <style>
+            .ui-panelgrid.showcase-text-align-center .ui-grid-responsive .ui-panelgrid-cell {
+                text-align: center;
+            }
+
+            .customPanelGrid .ui-panelgrid-content {
+                align-items: center;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <p:card title="User Profile Page" style="margin: 20px;">
+            <br/><br/>
+            <div class="card">
+                <h5 style="margin-top:0">Details</h5>
+                <div class="card">
+                    <h:graphicImage library="images" name="profile.png" alt="Profile" styleClass="profile-image"/>
+                </div>
+
+                <p:panelGrid columns="2">
+                    <h:outputText value="Username:" />
+                    <h:outputText value="#{loginBean.currentUser.username}" />
+
+                    <h:outputText value="Password:" />
+                    <h:outputText value="#{loginBean.currentUser.password}"/>
+
+                    <h:outputText value="Department:" />
+                    <h:outputText value="#{loginBean.currentUser.department}" />
+
+                    <h:outputText value="Area of Residence:" />
+                    <h:outputText value="#{loginBean.currentUser.city}" /> 
+                    <h:outputText value="Birth Date:" />
+                    <h:outputText value="#{loginBean.currentUser.birth}">
+                        <f:convertDateTime pattern="yyyy/MM/dd" />
+                    </h:outputText>
+                </p:panelGrid>
+
+                <p:commandButton icon="pi pi-user-edit"
+                                 value="Edit Profile"
+                                 update=":dialogs:manage-user-content"
+                                 oncomplete="PF('manageUserDialog').show()"
+                                 styleClass="edit-button rounded-button ui-button-success"
+                                 process="@this">
+                    <f:setPropertyActionListener value="#{loginBean.currentUser}" target="#{actionBean.selectedUser}" />
+                    <p:resetInput target=":dialogs:manage-user-content" />
+                </p:commandButton>
+            </div>
+            <div class="HomeLink">
+                <h:link value="Back to Home" outcome="Home" dir="rtl"/>
+            </div>
+            <div class="Logout">
+            <h:form>
+                <p:commandButton value="Logout" icon="pi pi-fw pi-sign-out" action="#{loginBean.logout}" update="@none" immediate="true" styleClass="ui-button-info"/>
+            </h:form>
+            </div>
+        </p:card>
+
+        <h:form id="dialogs">
+            <p:dialog header="Edit Details" showEffect="fade" modal="true"
+                      widgetVar="manageUserDialog" responsive="true">
+                <p:outputPanel id="manage-user-content" class="ui-fluid">
+                    <p:outputPanel rendered="#{not empty actionBean.selectedUser}">
+                        <div class="field">
+                            <p:outputLabel for="name">Name</p:outputLabel>
+                            <p:inputText id="name" value="#{actionBean.selectedUser.name}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="username">Username</p:outputLabel>
+                            <p:inputText id="username" value="#{actionBean.selectedUser.username}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="password">Password</p:outputLabel>
+                            <p:inputText id="password" value="#{actionBean.selectedUser.password}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="department">Department</p:outputLabel>
+                            <p:inputText id="department" value="#{actionBean.selectedUser.department}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="birth">Birth</p:outputLabel>
+                            <p:calendar id="birth" value="#{actionBean.selectedUser.birth}"
+                                        pattern="yyyy/MM/dd" navigator="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="gender">Gender</p:outputLabel>
+                            <p:selectOneRadio id="gender" value="#{actionBean.selectedUser.gender}"
+                                              layout="responsive" columns="2">
+                                <f:selectItem itemLabel="Male" itemValue="m" />
+                                <f:selectItem itemLabel="Female" itemValue="f" />
+                            </p:selectOneRadio>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="city">City</p:outputLabel>
+                            <p:inputText id="city" value="#{actionBean.selectedUser.city}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="region_id">Region ID</p:outputLabel>
+                            <p:inputText id="region_id" value="#{actionBean.selectedUser.region_id}" />
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="Save" icon="pi pi-check"
+                                     actionListener="#{actionBean.saveUserAction}"
+                                     update="manage-user-content :mainForm:dt-users :mainForm:growl"
+                                     process="manage-user-content @this"
+                                     oncomplete="PF('manageUserDialog').hide()" />
+                    <p:commandButton value="Cancel" icon="pi pi-times"
+                                     onclick="PF('manageUserDialog').hide()"
+                                     class="ui-button-secondary" type="button" />
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</html>

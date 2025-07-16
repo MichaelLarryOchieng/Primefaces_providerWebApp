@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/template.xhtml">
+    <ui:define name="title">Dashboard</ui:define>
+    
+    <ui:define name="content">
+        <h:head>
+            <title>Dashboard</title>
+            <!-- Dynamic Theme Loading -->
+            <!--<h:outputStylesheet name="theme.css" library="#{themeBean.themeCSS}" />-->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+            <script type="text/javascript">
+                function debugTableExport() {
+                    console.log('=== Debug Table Export ===');
+                    console.log('Looking for table elements...');
+                    const possibleIds = ['mainForm:dt-users', 'mainForm_dt-users', 'dt-users'];
+                    possibleIds.forEach(id => {
+                        const element = document.getElementById(id);
+                        console.log(`ID "${id}":`, element);
+                    });
+                    const byClass = document.querySelector('.ui-datatable');
+                    console.log('By class .ui-datatable:', byClass);
+                    const allMatching = document.querySelectorAll('[id*="dt-users"]');
+                    console.log('All elements containing "dt-users":', allMatching);
+                    allMatching.forEach((el, index) => {
+                        console.log(`Element ${index}:`, el.id, el.tagName, el.className);
+                    });
+                }
+
+                function exportTableAsImage(tableId, filename) {
+                    console.log('Export called with:', tableId, filename);
+                    debugTableExport();
+                    let tableElement = document.getElementById(tableId);
+                    if (!tableElement) {
+                        tableElement = document.getElementById(tableId.replace(/:/g, '_'));
+                    }
+                    if (!tableElement) {
+                        tableElement = document.querySelector('.ui-datatable');
+                    }
+                    if (!tableElement) {
+                        alert('Table element not found! Check browser console for debug info.');
+                        return;
+                    }
+                    console.log('Found table element:', tableElement);
+                    html2canvas(tableElement, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: true
+                    }).then(function (canvas) {
+                        const imgData = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = imgData;
+                        link.download = filename + '.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        PF('exportOptionsDialog').hide();
+                    }).catch(function (error) {
+                        console.error('Export failed:', error);
+                        alert('Export failed: ' + error.message);
+                    });
+                }
+            </script>
+            <h:outputStylesheet name="primefaces-#{themeBean.theme}/theme.css" library="primefaces-#{themeBean.theme}" />
+            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+            <script type="text/javascript">
+                function statisticsChartExtender() {
+                    var options = {
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                formatter: function (value, context) {
+                                
+                                    const total = context.dataset.data.reduce((sum, val) => sum + val.intValue(), 0);
+                                    const percentage = Math.round((value.intValue() / total) * 100) + '%';
+                                    return context.chart.data.labels[context.dataIndex] + '\n' + percentage;
+                                }
+                            }
+                        }
+                    };
+                    
+                    $.extend(true, this.cfg.config, options);
+                }
+            </script>
+        </h:head>
+
+        <h:body>
+            <div class="card">
+                <h:form id="mainForm">
+                    <p:growl id="growl" showDetail="true" />
+                    
+                    <p:splitter style="height: 600px" layout="vertical">
+                        <p:splitterPanel styleClass="flex align-items-center justify-content-center">
+                            <div class="card">
+                                <p:panel header="User Statistics by Department" style="margin-top:20px;">
+                                    <div class="grid">
+                                        <div class="col-12 lg:col-6 xl:col-4">
+                                            <div class="card">
+                                                <p:chart value="#{statisticsBean.departmentPieModel}" 
+                                                        extender="statisticsChartExtender" 
+                                                        style="width: 100%; height: 300px;"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p:panel>
+                                <br/>
+                            </div>
+                        </p:splitterPanel>
+                        
+                        <p:splitterPanel styleClass="flex align-items-center justify-content-center">
+                            <div class="card crud-demo">
+                                <p:toolbar>
+                                    <p:toolbarGroup>
+                                        <p:commandButton value="New" icon="pi pi-user-plus" 
+                                                       actionListener="#{actionBean.prepareAddUser}"
+                                                       update=":dialogs:manage-user-content" 
+                                                       oncomplete="PF('manageUserDialog').show()"
+                                                       styleClass="ui-button-success" style="margin-right: .5rem">
+                                            <p:resetInput target=":dialogs:manage-user-content" />
+                                        </p:commandButton>
+                                        
+                                        <p:commandButton id="delete-users-button" 
+                                                       value="#{empty UserBean.selectedUsers ? 'Delete' : 'Delete ('.concat(UserBean.selectedUsers.size()).concat(')')}"
+                                                       icon="pi pi-trash" 
+                                                       actionListener="#{actionBean.deleteSelectedUsers}"
+                                                       styleClass="ui-button-danger" 
+                                                       disabled="#{empty UserBean.selectedUsers}" 
+                                                       update="@this :mainForm:growl :mainForm:dt-users">
+                                            <p:confirm header="Confirmation" 
+                                                     message="Delete the selected users?"
+                                                     icon="pi pi-exclamation-triangle" />
+                                        </p:commandButton>
+                                    </p:toolbarGroup>
+                                    
+                                    <p:toolbarGroup align="right">
+                                        <p:fileUpload mode="simple" skinSimple="true" label="Import" chooseIcon="pi pi-download" />
+                                        
+                                        <p:commandButton value="Export as PDF" icon="pi pi-file-pdf"
+                                                       ajax="false" styleClass="ui-button-info">
+                                            <p:dataExporter type="pdf" target="mainForm:dt-users" fileName="users_export_pdf"
+                                                          preProcessor="#{userExporterBean.preProcessPDF}"
+                                                          options="#{userExporterBean.pdfOptions}" />
+                                        </p:commandButton>
+                                        
+                                        <p:commandButton value="Export as Excel" icon="pi pi-file-excel"
+                                                       ajax="false" styleClass="ui-button-success">
+                                            <p:dataExporter type="xlsxstream" target="mainForm:dt-users" fileName="users_export_excel"
+                                                          onRowExport="#{userExporterBean.onRowExportXLS}"
+                                                          options="#{userExporterBean.excelOptions}" />
+                                        </p:commandButton>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                                
+                                <p:dataTable id="dt-users" widgetVar="dtUsers" var="user" value="#{UserBean.userList}"
+                                           reflow="true" styleClass="products-table" selectionMode="multiple" 
+                                           selection="#{UserBean.selectedUsers}" rowKey="#{user.id}" 
+                                           paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom">
+                                    
+                                    <f:facet name="header">
+                                        <div class="products-table-header">
+                                            <span style="font-weight: bold">USERS</span>
+                                            <span class="filter-container ui-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <p:inputText id="globalFilter" 
+                                                           onkeyup="PrimeFaces.debounce(() => PF('dtUsers').filter(), 500)" 
+                                                           placeholder="Search" />
+                                            </span>
+                                        </div>
+                                    </f:facet>
+                                    
+                                    <p:ajax event="rowSelect" update=":mainForm:delete-users-button" />
+                                    <p:ajax event="rowUnselect" update=":mainForm:delete-users-button" />
+                                    <p:ajax event="rowSelectCheckbox" update=":mainForm:delete-users-button" />
+                                    <p:ajax event="rowUnselectCheckbox" update=":mainForm:delete-users-button" />
+                                    <p:ajax event="toggleSelect" update=":mainForm:delete-users-button" />
+                                    
+                                    <p:column selectionBox="true" exportable="false"></p:column>
+                                    
+                                    <p:column headerText="Name" sortBy="#{user.name}" filterBy="#{user.name}">
+                                        <h:outputText value="#{user.name}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
+                                        <h:outputText value="#{user.username}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Department" sortBy="#{user.department}" filterBy="#{user.department}">
+                                        <h:outputText value="#{user.department}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Birth" sortBy="#{user.birth}" filterBy="#{user.birth}">
+                                        <h:outputText value="#{user.birth}">
+                                            <f:convertDateTime pattern="yyyy/MM/dd" />
+                                        </h:outputText>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Gender" sortBy="#{user.gender}" filterBy="#{user.gender}">
+                                        <h:outputText value="#{user.gender}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Actions" exportable="false" ariaHeaderText="Actions">
+                                        <p:commandButton icon="pi pi-user-edit" 
+                                                       update=":dialogs:manage-user-content"
+                                                       oncomplete="PF('manageUserDialog').show()"
+                                                       styleClass="edit-button rounded-button ui-button-success" 
+                                                       process="@this">
+                                            <f:setPropertyActionListener value="#{user}" target="#{actionBean.selectedUser}" />
+                                            <p:resetInput target=":dialogs:manage-user-content" />
+                                        </p:commandButton>
+                                        
+                                        <p:commandButton class="ui-button-warning rounded-button" 
+                                                       icon="pi pi-user-minus"
+                                                       process="@this"
+                                                       oncomplete="PF('deleteUserDialog').show()">
+                                            <f:setPropertyActionListener value="#{user}" target="#{actionBean.selectedUser}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </p:splitterPanel>
+                    </p:splitter>
+                </h:form>
+            </div>
+
+            <h:form id="dialogs">
+                <p:dialog header="Edit Details" showEffect="fade" modal="true" 
+                         widgetVar="manageUserDialog" responsive="true">
+                    <p:outputPanel id="manage-user-content" class="ui-fluid">
+                        <p:outputPanel rendered="#{not empty actionBean.selectedUser}">
+                            <div class="field">
+                                <p:outputLabel for="name">Name</p:outputLabel>
+                                <p:inputText id="name" value="#{actionBean.selectedUser.name}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="username">Username</p:outputLabel>
+                                <p:inputText id="username" value="#{actionBean.selectedUser.username}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="password">Password</p:outputLabel>
+                                <p:inputText id="password" value="#{actionBean.selectedUser.password}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="department">Department</p:outputLabel>
+                                <p:inputText id="department" value="#{actionBean.selectedUser.department}" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="birth">Birth</p:outputLabel>
+                                <p:calendar id="birth" value="#{actionBean.selectedUser.birth}" 
+                                          pattern="yyyy/MM/dd" navigator="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="gender">Gender</p:outputLabel>
+                                <p:selectOneRadio id="gender" value="#{actionBean.selectedUser.gender}" 
+                                                layout="responsive" columns="2">
+                                    <f:selectItem itemLabel="Male" itemValue="m" />
+                                    <f:selectItem itemLabel="Female" itemValue="f" />
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="city">City</p:outputLabel>
+                                <p:inputText id="city" value="#{actionBean.selectedUser.city}" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="region_id">Region ID</p:outputLabel>
+                                <p:inputText id="region_id" value="#{actionBean.selectedUser.region_id}" />
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Save" icon="pi pi-check" 
+                                       actionListener="#{actionBean.saveUserAction}"
+                                       update="manage-user-content :mainForm:dt-users :mainForm:growl" 
+                                       process="manage-user-content @this" 
+                                       oncomplete="PF('manageUserDialog').hide()" />
+                        <p:commandButton value="Cancel" icon="pi pi-times" 
+                                       onclick="PF('manageUserDialog').hide()"
+                                       class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+                
+                <p:confirmDialog widgetVar="deleteUserDialog" showEffect="fade" width="300"
+                               message="Delete user #{actionBean.selectedUser.name}?" 
+                               header="Confirm" severity="warn">
+                    <p:commandButton value="Yes" icon="pi pi-check" 
+                                   actionListener="#{actionBean.deleteUserAction}"
+                                   process="@this" 
+                                   update=":mainForm:dt-users :mainForm:growl :mainForm:delete-users-button"
+                                   oncomplete="PF('deleteUserDialog').hide()" />
+                    <p:commandButton value="No" type="button" styleClass="ui-button-secondary" 
+                                   icon="pi pi-times" onclick="PF('deleteUserDialog').hide()" />
+                </p:confirmDialog>
+                
+                <p:confirmDialog global="true" showEffect="fade" width="300">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+                                   icon="pi pi-check" />
+                    <p:commandButton value="No" type="button" 
+                                   styleClass="ui-confirmdialog-no ui-button-secondary"
+                                   icon="pi pi-times" />
+                </p:confirmDialog>
+                
+                <p:dialog header="Export Options" showEffect="fade" modal="true" 
+                         widgetVar="exportOptionsDialog" responsive="true">
+                    <p:outputPanel id="export-options-content" class="ui-fluid">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <p:commandButton value="Export as PDF" icon="pi pi-file-pdf"
+                                           styleClass="ui-button-info" ajax="false">
+                                <p:dataExporter type="pdf" target="mainForm:dt-users" fileName="users_export_pdf"
+                                              preProcessor="#{userExporterBean.preProcessPDF}"
+                                              options="#{userExporterBean.pdfOptions}" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="Export as Excel" icon="pi pi-file-excel"
+                                           styleClass="ui-button-success" ajax="false">
+                                <p:dataExporter type="xlsxstream" target="mainForm:dt-users" fileName="users_export_excel"
+                                              onRowExport="#{userExporterBean.onRowExportXLS}"
+                                              options="#{userExporterBean.excelOptions}" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="Export as Image (PNG)" icon="pi pi-image"
+                                           styleClass="ui-button-secondary" type="button"
+                                           onclick="exportTableAsImage('mainForm:dt-users', 'users_export_image');" />
+                        </div>
+                    </p:outputPanel>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Close" icon="pi pi-times" 
+                                       onclick="PF('exportOptionsDialog').hide()"
+                                       class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </h:body>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="jakarta.faces.core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">Home Page</ui:define>
+
+
+        <ui:define name="additionalStylesheets">
+
+            <script src="https://maps.google.com/maps/api/js?key=AIzaSyCvCDkYieuUBmMWon_mfLAfjuaeuosuqow&amp;sensor=true"></script>
+            <style type="text/css">
+                .ui-splitter-panel .p_card {
+                    padding-top: 80px;
+                    padding-bottom: 80px;
+                    padding-right: 80px;
+                    padding-left: 60px;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    flex-wrap: wrap !important;
+                    background-color:transparent;
+                    color: white;
+                    font-size: 40px;
+                    font-style: oblique;
+                }
+                .wifi_logo{
+                    border-radius: 50%;
+                }
+                .card{
+                    background-color: white;
+                }
+                
+                .product-item .product-item-content {
+                    border: 1px solid var(--surface-d);
+                    border-radius: 3px;
+                    margin: .3rem;
+                    text-align: center;
+                    padding: 2rem 0;
+                }
+
+                .product-item .product-image {
+                    width: 50%;
+                    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+                }
+            </style>
+
+
+        </ui:define>
+        <ui:define name="content">
+            <div class="card">
+                <p:splitter style="height: 1000px; background-image:url('images/background2.png'); background-size: cover; background-repeat: no-repeat; background-position: center center;" layout="vertical">
+                    <p:splitterPanel styleClass="flex align-items-center justify-content-center">
+
+                        <div class="flex align-items-center justify-content-between flex-wrap p_card" style=" width:60%;">
+
+                            <h5>
+                                <h:graphicImage class="wifi_logo" value="/images/wifi1.jpg" alt="Logo" style="width:70px; height: 70px;"/>
+                                Superfast Internet provider
+                            </h5>
+
+                            Most Reliable Service Provider
+                        </div>
+                    </p:splitterPanel>
+                </p:splitter>
+                <p:splitter style="height: 1000px; background-image:url('images/background3.png'); background-size: cover; background-repeat: no-repeat; background-position: center center;" layout="vertical">
+                    <p:splitterPanel styleClass="flex align-items-center justify-content-center">
+                        <h:form id="packageForm">
+                            <div class="card">
+                                <p:carousel value="#{packageBean.packages}" var="internetPackage" numVisible="3" numScroll="1"
+                                            responsiveOptions="#{carouselView.responsiveOptions}">
+                                    <f:facet name="header">
+                                        <h5 style="font-size: 30px">Our Internet Packages</h5>
+                                    </f:facet>
+                                    <div class="product-item">
+                                        <div class="product-item-content">
+                                            <div class="mb-3">
+                                                <i class="pi pi-wifi" style="font-size: 4em; color:indigo;"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="mb-1">#{internetPackage.name}</h4>
+                                                <h6 class="mt-0 mb-3">
+                                                    <h:outputText value="#{internetPackage.price}">
+                                                        <f:convertNumber type="currency" pattern="Ksh#,##0.00" />
+                                                    </h:outputText>
+                                                    <h:outputText value="#{internetPackage.billingCycle}" />
+                                                </h6>
+                                                <span class="product-badge">#{internetPackage.speedMbps} Mbps</span>
+                                                <p class="mt-3">#{internetPackage.description}</p>
+                                                <div class="mt-5">
+                                                   <p:commandButton value="See Package" action="packages.xhtml?faces-redirect=true" ajax="false" icon="pi pi-check-circle" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p:carousel>
+                            </div>
+                        </h:form>
+                    </p:splitterPanel>
+                    <p:splitterPanel styleClass="flex align-items-center justify-content-center">
+                        Panel 4
+
+                        <h:panelGroup layout="block" styleClass="card" style="width: 100%;">
+                            <p:gmap center="41.381542, 2.122893" zoom="15" type="HYBRID" style="width:100%;height:400px" />
+                        </h:panelGroup>
+                    </p:splitterPanel>
+                </p:splitter>
+            </div>
+        </ui:define>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Our Store</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+        <style type="text/css">
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f7f6;
+                color: #333;
+            }
+            .main-form {
+                background-image: url('images/storeBack.jpg');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center center;
+                min-height: 100vh;
+                padding: 20px;
+            }
+            .card {
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+            .p-carousel-header-custom {
+                text-align: center;
+                font-size: 1.8em;
+                color: #2c3e50;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+            .product-item {
+                padding: 10px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                margin: .5rem;
+                background-color: #ffffff;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                transition: transform 0.2s ease-in-out;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .product-item:hover {
+                transform: translateY(-5px);
+            }
+            .product-item-content {
+                text-align: center;
+                padding: 1rem;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .product-image {
+                max-width: 90%;
+                height: auto;
+                max-height: 200px;
+                border-radius: 4px;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .product-name {
+                font-size: 1.4em;
+                color: #34495e;
+                margin-bottom: 0.5rem;
+            }
+            .product-price {
+                font-size: 1.2em;
+                color: #27ae60;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+            .product-badge {
+                display: inline-block;
+                padding: .3em .6em;
+                border-radius: 4px;
+                font-size: .85em;
+                font-weight: bold;
+                margin-top: .5rem;
+                margin-bottom: .5rem;
+                color: #fff;
+            }
+            .status-instock {
+                background-color: #28a745;
+            }
+            .status-lowstock {
+                background-color: #ffc107;
+                color: #333;
+            }
+            .status-outofstock {
+                background-color: #dc3545;
+            }
+            .status-unlimited {
+                background-color: #007bff;
+            }
+            .product-description {
+                font-size: 0.9em;
+                color: #555;
+                margin-top: 1rem;
+                flex-grow: 1;
+            }
+            .product-actions {
+                margin-top: auto;
+                padding-top: 1.5rem;
+                display: flex;
+                justify-content: center;
+                gap: 0.8rem;
+                flex-wrap: wrap;
+            }
+            .rounded-button {
+                border-radius: 50%;
+                width: 2.5rem;
+                height: 2.5rem;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .quantity-input-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 1rem auto;
+                max-width: 150px;
+            }
+            .quantity-input-container .ui-spinner {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            .p-divider {
+                margin: 40px 0;
+            }
+            .shopping-cart-summary {
+                text-align: center;
+                background-color: #e9ecef;
+                border-radius: 8px;
+                padding: 25px;
+                margin-top: 30px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                color: #333;
+            }
+            .shopping-cart-summary p {
+                font-size: 1.3em;
+                margin-bottom: 10px;
+            }
+            .shopping-cart-summary .ui-button {
+                margin-top: 15px;
+            }
+        </style>
+    </h:head>
+    <body>
+        <h:form id="mainForm" class="main-form">
+            <p:messages id="globalMessages" showDetail="true" closable="true">
+                <p:autoUpdate/>
+            </p:messages>
+
+            <div class="card">
+                <p:carousel value="#{packageBean.packages}" var="pkg" numVisible="3" numScroll="1" responsiveOptions="#{carouselView.responsiveOptions}">
+                    <f:facet name="header"><h5 class="p-carousel-header-custom">Our Internet Packages</h5></f:facet>
+                    <div class="product-item">
+                        <div class="product-item-content">
+                            <h:graphicImage class="product-image" value="#{pkg.imagePath}" alt="#{pkg.name}" />
+                            <h4 class="product-name">#{pkg.name}</h4>
+                            <h6 class="product-price">
+                                <h:outputText value="#{pkg.price}">
+                                    <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                                </h:outputText>
+                                <h:outputText value=" / #{pkg.billingCycle}" />
+                            </h6>
+                            <span class="product-badge status-instock">
+                                <h:outputText value="#{pkg.speedMbps} Mbps"/>
+                            </span>
+                            <p class="product-description">#{pkg.description}</p>
+                            <div class="product-actions">
+                                <p:commandButton icon="pi pi-cart-plus" value='Add to cart'
+                                                 styleClass="ui-button-raised ui-button-primary"
+                                                 action="#{shoppingCartBean.addItem(pkg, 1)}"
+                                                 update="@form:globalMessages @form:shoppingCartSummary"/>
+                                <p:commandButton type="button" icon="pi pi-star" styleClass="ui-button-success rounded-button"/>
+                            </div>
+                        </div>
+                    </div>
+                </p:carousel>
+            </div>
+
+            <p:divider align="center" type="dashed"><b>Hardware Products</b></p:divider>
+
+            <div class="card">
+                <p:carousel value="#{productBean.products}" var="prod" numVisible="3" numScroll="1" responsiveOptions="#{carouselView.responsiveOptions}">
+                    <f:facet name="header"><h5 class="p-carousel-header-custom">Our Hardware</h5></f:facet>
+                    <div class="product-item">
+                        <div class="product-item-content">
+                            <h:graphicImage class="product-image" value="#{prod.imagePath}" alt="#{prod.name}" />
+                            <h4 class="product-name">#{prod.name}</h4>
+                            <h:outputText value="In Stock: #{prod.stock}" style="font-size: 0.9em; color: #666;"/><br/>
+                            <h6 class="product-price">
+                                <h:outputText value="#{prod.price}">
+                                    <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                                </h:outputText>
+                            </h6>
+                            <p class="product-description">#{prod.description}</p>
+                            <div class="quantity-input-container">
+                                <p:outputLabel value="Quantity:" />
+                                <p:spinner id="quantity_#{prod.productID}"
+                                           value="#{prod.selectedQuantity}"
+                                           min="1" max="#{prod.stock}"
+                                           disabled="#{prod.stock == 0}"/>
+                            </div>
+                            <div class="product-actions">
+                                <p:commandButton icon="pi pi-cart-plus" value='Add to cart'
+                                                 styleClass="ui-button-raised ui-button-primary"
+                                                 action="#{shoppingCartBean.addItem(prod, 'HARDWARE', prod.selectedQuantity)}" update="@form:globalMessages @form:shoppingCartSummary"
+                                                 disabled="#{prod.stock == 0}"/>
+                                <p:commandButton type="button" icon="pi pi-star" styleClass="ui-button-success rounded-button"/>
+                                <p:commandButton type="button" icon="pi pi-cog" styleClass="ui-button-help rounded-button"/>
+                            </div>
+                            <div class="HomeLink">
+                                <h:link value="Back to Home" outcome="Home" dir="rtl"/>
+                            </div>
+                        </div>
+                    </div>
+                </p:carousel>
+            </div>
+
+            <p:outputPanel id="shoppingCartSummary" class="shopping-cart-summary">
+                <p>
+                    <h:outputText value="Total Items in Cart: #{shoppingCartBean.totalItemsInCart}" rendered="#{shoppingCartBean.totalItemsInCart > 0}"/><br/>
+                    <h:outputText value="Cart Total: " rendered="#{shoppingCartBean.totalItemsInCart > 0}"/><h:outputText value="#{shoppingCartBean.cartTotalPrice}" rendered="#{shoppingCartBean.totalItemsInCart > 0}">
+                        <f:convertNumber type="currency" pattern="Ksh#,##0.00"/>
+                    </h:outputText>
+                </p>
+                <p:commandLink value="Go to Cart" action="/cart.xhtml?faces-redirect=true" styleClass="ui-button ui-button-secondary" rendered="#{shoppingCartBean.totalItemsInCart > 0}"/>
+                <h:outputText value="Your cart is empty." rendered="#{shoppingCartBean.totalItemsInCart == 0}" style="color: #6c757d;"/>
+            </p:outputPanel>
+            <div class="HomeLink">
+                <h:link value="Back to Home" outcome="Home" dir="rtl"/>
+            </div>
+        </h:form>
+    </body>
+</html>

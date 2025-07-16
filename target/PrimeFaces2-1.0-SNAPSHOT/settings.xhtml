@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Application Settings</title>
+    <h:outputStylesheet name="primefaces-#{themeBean.theme}/theme.css" library="primefaces-#{themeBean.theme}" />
+</h:head>
+<h:body>
+    <div class="card">
+        <h:form id="settingsForm">
+            <p:growl id="growl" showDetail="true" />
+
+            <p:megaMenu orientation="horizontal" autoDisplay="false">
+                <f:facet name="start">
+                    <p:graphicImage value="/images/Logo.png" width="150" height="50"/>
+                </f:facet>
+                <p:menuitem value="Home" outcome="" icon="pi pi-fw pi-home" />
+                <p:menuitem value="Users" outcome="welcome" icon="pi pi-fw pi-users" />
+
+                <p:submenu label="Settings" icon="pi pi-fw pi-cog">
+                    <p:column>
+                        <p:submenu label="Theme">
+                            <p:menuitem value="Light Mode (Saga)" actionListener="#{themeBean.changeTheme('saga')}" update="@all" icon="pi pi-sun" />
+                            <p:menuitem value="Dark Mode (Vela)" actionListener="#{themeBean.changeTheme('vela')}" update="@all" icon="pi pi-moon" />
+                        </p:submenu>
+                        <p:menuitem value="More Settings..." outcome="settings" icon="pi pi-fw pi-cogs" />
+                    </p:column>
+                    <p:column>
+                        <p:submenu label="User Preferences">
+                            <p:menuitem value="Profile" outcome="userProfile" />
+                            <p:menuitem value="Notifications" outcome="notificationSettings" />
+                        </p:submenu>
+                    </p:column>
+                </p:submenu>
+
+                <f:facet name="end">
+                    <div class="ui-input-icon-left mr-2">
+                        <i class="pi pi-fw pi-search" />
+                        <p:inputText placeholder="Search"/>
+                    </div>
+                    <p:commandButton value="Logout" icon="pi pi-fw pi-sign-out" action="#{LoginBean.logout}" update="@none" immediate="true" styleClass="ui-button-info"/>
+                </f:facet>
+            </p:megaMenu>
+
+            <p:panel header="General Application Settings" style="margin-top:20px;">
+                <p:messages id="messages" closable="true" />
+
+                <div class="ui-fluid p-formgrid p-grid">
+                    <div class="p-field p-col-12 p-md-6">
+                        <p:outputLabel for="brandingName">Branding Name</p:outputLabel>
+                        <p:inputText id="brandingName" value="#{appSettingsBean.brandingName}" required="true" />
+                    </div>
+
+                    <div class="p-field p-col-12 p-md-6">
+                        <p:outputLabel for="timezone">Timezone</p:outputLabel>
+                        <p:selectOneMenu id="timezone" value="#{appSettingsBean.timezone}" required="true">
+                            <f:selectItem itemLabel="Select Timezone" itemValue="" noSelectionOption="true" />
+                            <f:selectItem itemLabel="Europe/Berlin (UTC+1)" itemValue="Europe/Berlin" />
+                            <f:selectItem itemLabel="America/New_York (UTC-5)" itemValue="America/New_York" />
+                            <f:selectItem itemLabel="Asia/Tokyo (UTC+9)" itemValue="Asia/Tokyo" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="p-field p-col-12 p-md-6">
+                        <p:outputLabel for="language">Default Language</p:outputLabel>
+                        <p:selectOneMenu id="language" value="#{appSettingsBean.language}" required="true">
+                            <f:selectItem itemLabel="Select Language" itemValue="" noSelectionOption="true" />
+                            <f:selectItem itemLabel="English" itemValue="en" />
+                            <f:selectItem itemLabel="German" itemValue="de" />
+                            <f:selectItem itemLabel="Spanish" itemValue="es" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="p-field p-col-12 p-md-6">
+                        <p:outputLabel for="defaultView">Default Dashboard View</p:outputLabel>
+                        <p:selectOneMenu id="defaultView" value="#{appSettingsBean.defaultView}" required="true">
+                            <f:selectItem itemLabel="Select Default View" itemValue="" noSelectionOption="true" />
+                            <f:selectItem itemLabel="Overview Dashboard" itemValue="overview" />
+                            <f:selectItem itemLabel="User List" itemValue="userList" />
+                            <f:selectItem itemLabel="My Profile" itemValue="myProfile" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="p-field p-col-12">
+                        <p:outputLabel for="logoUpload">Upload New Logo</p:outputLabel>
+                        <p:fileUpload id="logoUpload" mode="simple" skinSimple="true"
+                                      label="Choose Logo" chooseIcon="pi pi-upload"
+                                      auto="false" value="#{appSettingsBean.logoFile}" />
+                        <p:outputLabel value="Current Logo: " />
+                        <p:graphicImage value="/images/Logo.png" height="30" rendered="#{not empty appSettingsBean.currentLogoPath}" />
+                    </div>
+                </div>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Save Settings" icon="pi pi-check" actionListener="#{appSettingsBean.saveSettings}"
+                                     update="settingsForm:growl settingsForm:messages" styleClass="ui-button-success" />
+                    <p:commandButton value="Reset" icon="pi pi-refresh" actionListener="#{appSettingsBean.loadSettings}"
+                                     update="settingsForm" styleClass="ui-button-secondary" process="@this" />
+                </f:facet>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html>
